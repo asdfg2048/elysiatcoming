@@ -11,41 +11,37 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            height: 100vh;
-            width: 100vw;
+            min-height: 100vh;
+            width: 100%;
             background: #02040a;
             color: #fff;
             font-family: 'Inter', sans-serif;
-            overflow: hidden;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            overflow-x: hidden;
         }
 
-        /* Fundo */
         .ambient {
             position: fixed;
             inset: 0;
             background: radial-gradient(circle at center, #0f172a 0%, #02040a 100%);
-            z-index: 1;
+            z-index: -1;
         }
 
-        /* Container da Moeda */
-        .coin-container {
-            position: relative;
-            z-index: 2;
-            perspective: 1500px;
+        .wrapper-main {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
+            perspective: 1500px; /* Aumentado para profundidade mais estável */
             width: 100%;
-            height: 100%;
+            padding: 20px;
         }
 
-        .coin-wrapper {
-            /* Tamanho dinâmico e seguro */
-            width: min(70vw, 350px);
-            height: min(70vw, 350px);
+        .coin-box {
+            width: clamp(260px, 75vw, 380px);
+            height: clamp(260px, 75vw, 380px);
             position: relative;
             transform-style: preserve-3d;
         }
@@ -64,86 +60,94 @@
             border-radius: 50%;
             background: #111827;
             pointer-events: none;
-            box-shadow: 0 0 1px rgba(255,255,255,0.05);
+            backface-visibility: visible; /* Garante que a borda não suma */
         }
 
         .face {
             position: absolute;
             inset: 0;
             border-radius: 50%;
-            backface-visibility: hidden;
+            /* backface-visibility: hidden pode bugar no safari mobile, mudando para visible e controlando via Z */
+            backface-visibility: visible; 
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 100;
             background: #05070f;
+            transform-style: preserve-3d;
         }
 
         .front {
-            transform: translateZ(15px); /* Espessura fixa e segura */
+            /* Aumentado o Z para 16px para ficar 1px acima das camadas de borda */
+            transform: translateZ(16px);
             border: 2px solid rgba(255,255,255,0.1);
             overflow: hidden;
+            z-index: 2;
         }
 
-        .front img { width: 100%; height: 100%; object-fit: cover; }
+        .front img { 
+            width: 100.5%; /* Pequeno ajuste para cobrir bordas brancas */
+            height: 100.5%; 
+            object-fit: cover; 
+            display: block;
+        }
 
         .back {
-            transform: rotateY(180deg) translateZ(15px);
+            /* Invertido e empurrado para o outro lado */
+            transform: rotateY(180deg) translateZ(16px);
             border: 2px solid rgba(255,255,255,0.1);
             background: #02040a;
             flex-direction: column;
             text-align: center;
-            padding: 10px;
+            padding: 15px;
+            z-index: 1;
         }
 
         .back h1 { 
-            font-size: clamp(16px, 5vw, 24px);
-            letter-spacing: 3px;
+            font-size: clamp(20px, 6vw, 28px);
+            letter-spacing: 4px;
             background: linear-gradient(to bottom, #fff, #64748b);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            font-weight: 600;
         }
 
-        .back p { font-size: 9px; opacity: 0.4; margin-top: 5px; text-transform: uppercase; letter-spacing: 2px; }
+        .back p { font-size: 11px; opacity: 0.4; margin-top: 10px; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* Rodapé Robusto */
         footer {
-            position: absolute;
-            bottom: 30px;
-            left: 0;
+            padding-bottom: 40px;
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 15px;
-            z-index: 10;
+            z-index: 100;
         }
 
         .social-links { display: flex; gap: 20px; }
 
         .social-icon {
-            font-size: 20px;
-            color: rgba(255,255,255,0.4);
-            width: 45px;
-            height: 45px;
+            font-size: 22px;
+            color: rgba(255,255,255,0.5);
+            width: 52px;
+            height: 52px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
             text-decoration: none !important;
             transition: 0.3s;
         }
 
-        .social-icon:hover {
+        .social-icon:hover, .social-icon:active {
             color: #fff;
+            background: rgba(255,255,255,0.12);
             transform: translateY(-3px);
-            background: rgba(255,255,255,0.1);
         }
 
         .copyright {
-            font-size: 10px;
+            font-size: 11px;
             color: rgba(255,255,255,0.2);
             letter-spacing: 1px;
         }
@@ -153,15 +157,15 @@
 
     <div class="ambient"></div>
 
-    <div class="coin-container">
-        <div class="coin-wrapper" id="wrapper">
+    <div class="wrapper-main">
+        <div class="coin-box" id="wrapper">
             <div class="coin" id="coin">
                 <div class="face front">
                     <img src="logo.jpeg" alt="Logo">
                 </div>
                 <div class="face back">
                     <h1>COMING SOON</h1>
-                    <p>Building the ideal.</p>
+                    <p>Bulding the ideal.</p>
                 </div>
             </div>
         </div>
@@ -183,43 +187,47 @@
         const coin = document.getElementById('coin');
         const wrapper = document.getElementById('wrapper');
         
-        // Reduzido para 60 camadas para máxima performance mobile
-        const layers = 60;
-        const totalThickness = 30; // pixels
+        // 40 camadas para performance fluida no mobile
+        const totalLayers = 40;
+        const thickness = 30;
 
-        for (let i = 0; i < layers; i++) {
+        for (let i = 0; i < totalLayers; i++) {
             const layer = document.createElement('div');
             layer.className = 'coin-layer';
-            const z = (i * (totalThickness / layers)) - (totalThickness / 2);
-            layer.style.transform = `translateZ(${z}px)`;
+            const zPos = (i * (thickness / totalLayers)) - (thickness / 2);
+            layer.style.transform = `translateZ(${zPos}px)`;
+            // Efeito visual de metal na borda
             layer.style.background = i % 2 === 0 ? "#111827" : "#0a0f1d";
             coin.appendChild(layer);
         }
 
-        let autoRot = 0;
+        let rot = 0;
         let tX = 0, tY = 0, cX = 0, cY = 0;
 
-        const move = (x, y) => {
-            const r = wrapper.getBoundingClientRect();
-            tX = -((y - r.top) / r.height - 0.5) * 35;
-            tY = ((x - r.left) / r.width - 0.5) * 35;
+        const update = (x, y) => {
+            const box = wrapper.getBoundingClientRect();
+            tX = -((y - box.top) / box.height - 0.5) * 35;
+            tY = ((x - box.left) / box.width - 0.5) * 35;
         };
 
-        window.addEventListener('mousemove', (e) => move(e.clientX, e.clientY));
-        window.addEventListener('touchmove', (e) => move(e.touches[0].clientX, e.touches[0].clientY), {passive: true});
-        
-        const rst = () => { tX = 0; tY = 0; };
-        window.addEventListener('mouseleave', rst);
-        window.addEventListener('touchend', rst);
+        window.addEventListener('mousemove', (e) => update(e.clientX, e.clientY));
+        window.addEventListener('touchmove', (e) => {
+            update(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: true });
 
-        function loop() {
-            autoRot = (autoRot + 0.4) % 360;
+        const reset = () => { tX = 0; tY = 0; };
+        window.addEventListener('mouseleave', reset);
+        window.addEventListener('touchend', reset);
+
+        function draw() {
+            rot = (rot + 0.4) % 360;
             cX += (tX - cX) * 0.08;
             cY += (tY - cY) * 0.08;
-            coin.style.transform = `rotateX(${cX}deg) rotateY(${autoRot + cY}deg)`;
-            requestAnimationFrame(loop);
+            // Aplicamos a rotação principal e a inclinação
+            coin.style.transform = `rotateX(${cX}deg) rotateY(${rot + cY}deg)`;
+            requestAnimationFrame(draw);
         }
-        loop();
+        draw();
     </script>
 </body>
 </html>
