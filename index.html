@@ -12,10 +12,12 @@
 
         body {
             height: 100vh;
+            /* Fundo escurecido para evitar a claridade excessiva no PC */
             background: #010206;
             color: #fff;
             font-family: 'Inter', sans-serif;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             overflow: hidden;
@@ -24,14 +26,17 @@
         .ambient {
             position: fixed;
             inset: 0;
-            background: radial-gradient(circle at center, #0a1125 0%, #010206 100%);
+            /* Gradiente ajustado: Mais escuro nas bordas para manter o foco no centro */
+            background: radial-gradient(circle at center, #060b1a 0%, #010206 100%);
             z-index: -1;
         }
 
         .wrapper {
             perspective: 1200px;
-            width: clamp(280px, 80vw, 380px);
-            height: clamp(280px, 80vw, 380px);
+            width: clamp(280px, 85vw, 380px);
+            height: clamp(280px, 85vw, 380px);
+            /* Ajuste de posição: Empurra a moeda um pouco mais para cima no mobile */
+            margin-bottom: 80px; 
         }
 
         .coin {
@@ -42,20 +47,15 @@
             will-change: transform;
         }
 
-        /* A BORDA DEFINITIVA: Sólida, lisa e sem camadas extras */
         .coin-body {
             position: absolute;
             inset: 0;
             border-radius: 50%;
             background: #080c14;
-            /* O segredo da lateral lisa: translateZ + Box Shadow empilhado internamente */
             transform: translateZ(-12px);
-            box-shadow: 
-                0 0 0 1px #1e293b,
-                0 0 40px rgba(0,0,0,1) inset;
+            box-shadow: 0 0 0 1px #1e293b, 0 0 40px rgba(0,0,0,1) inset;
         }
 
-        /* Camadas de preenchimento lateral (apenas 3 para suavizar a curva sem bugar) */
         .edge-fill {
             position: absolute;
             inset: 0;
@@ -93,7 +93,7 @@
         }
 
         .back h1 { 
-            font-size: clamp(20px, 6vw, 26px);
+            font-size: clamp(20px, 6.5vw, 26px);
             letter-spacing: 4px; 
             background: linear-gradient(to bottom, #fff, #64748b);
             -webkit-background-clip: text;
@@ -130,7 +130,7 @@
             border-radius: 50%;
         }
 
-        .copyright { font-size: 10px; color: rgba(255,255,255,0.2); }
+        .copyright { font-size: 10px; color: rgba(255,255,255,0.15); }
     </style>
 </head>
 <body>
@@ -178,7 +178,9 @@
         };
 
         window.addEventListener('mousemove', (e) => update(e.clientX, e.clientY));
-        window.addEventListener('touchmove', (e) => update(e.touches[0].clientX, e.touches[0].clientY), {passive: true});
+        window.addEventListener('touchmove', (e) => {
+            update(e.touches[0].clientX, e.touches[0].clientY);
+        }, {passive: true});
 
         function animate() {
             autoRot = (autoRot + 0.6) % 360;
