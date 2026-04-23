@@ -131,18 +131,43 @@
             gap: 15px;
         }
 
-        .social-links { display: flex; gap: 20px; }
+        /* Estilos atualizados para os ícones com hover */
+        .social-links { 
+            display: flex; 
+            gap: 20px; 
+            z-index: 100; /* Garante que fiquem clicáveis sobre o ambient */
+        }
+
         .social-icon {
             font-size: 22px;
             color: rgba(255,255,255,0.4);
             text-decoration: none !important;
-            width: 48px; height: 48px;
-            display: flex; align-items: center; justify-content: center;
+            width: 48px; 
+            height: 48px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
             background: rgba(255,255,255,0.02);
             border: 1px solid rgba(255,255,255,0.05);
             border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Transição suave com "mola" */
+            cursor: pointer;
         }
 
+        /* O HOVER: Brilho e movimento */
+        .social-icon:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.3);
+            transform: translateY(-5px); /* Sobe um pouquinho */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), 
+                        0 0 15px rgba(255, 255, 255, 0.05); /* Sombra e brilho sutil */
+        }
+
+        /* Efeito de clique */
+        .social-icon:active {
+            transform: translateY(-2px) scale(0.95);
+        }
         .copyright { font-size: 10px; color: rgba(255,255,255,0.15); }
     </style>
 </head>
