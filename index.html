@@ -1,136 +1,251 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Elysian - Coming Soon</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elysian Softwares | Coming Soon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-<style>
-* { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --coin-size: clamp(280px, 40vw, 420px);
+            --thickness: 30px; /* Espessura fixa para evitar vãos */
+        }
 
-body {
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background: radial-gradient(circle at center, #0b1020, #05070f);
-  font-family: 'Inter', sans-serif;
-  color:white;
-  padding:20px;
-}
+        body {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #02040a;
+            perspective: 2000px;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            color: #fff;
+        }
 
-/* container 3D */
-.scene {
-  perspective: 1200px;
-  width:100%;
-  display:flex;
-  justify-content:center;
-}
+        /* Glow de fundo */
+        .ambient-glow {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at center, #0f172a 0%, #02040a 70%);
+            z-index: -1;
+        }
 
-/* disco responsivo */
-.circle {
-  width: min(80vw, 420px);
-  aspect-ratio: 1/1;
-  position:relative;
-  transform-style: preserve-3d;
-  animation: rotateY 10s ease-in-out infinite;
-}
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 85vh;
+            width: 100%;
+        }
 
-/* glow */
-.circle::before {
-  content:"";
-  position:absolute;
-  inset:-3%;
-  border-radius:50%;
-  background: conic-gradient(#3b82f6, #6366f1, #3b82f6);
-  filter: blur(2vw);
-  animation: spin 12s linear infinite;
-  z-index:-1;
-}
+        .coin-wrapper {
+            width: var(--coin-size);
+            height: var(--coin-size);
+            position: relative;
+            transform-style: preserve-3d;
+            margin: auto;
+        }
 
-/* faces */
-.face {
-  position:absolute;
-  width:100%;
-  height:100%;
-  border-radius:50%;
-  backface-visibility: hidden;
-  overflow:hidden;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
+        .coin {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
 
-/* logo */
-.front img {
-  width:100%;
-  height:100%;
-  object-fit: cover;
-  border-radius:50%;
-}
+        /* Camadas da Borda - Técnica de Preenchimento Total */
+        .coin-layer {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: #111827;
+            pointer-events: none;
+            /* Sombra interna para fundir as camadas visualmente */
+            box-shadow: 0 0 1px #1e293b;
+        }
 
-/* texto */
-.back {
-  background:#020617;
-  transform: rotateY(180deg);
-  flex-direction:column;
-  text-align:center;
-  padding:8%;
-}
+        .face {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            background: #05070f;
+        }
 
-.back h1 {
-  font-size: clamp(18px, 4vw, 28px);
-  letter-spacing: clamp(2px, 0.8vw, 4px);
-}
+        .front {
+            transform: translateZ(calc(var(--thickness) / 2));
+            border: 2px solid rgba(255,255,255,0.1);
+            overflow: hidden;
+        }
 
-.back p {
-  margin-top:10px;
-  font-size: clamp(12px, 2.5vw, 14px);
-  opacity:0.6;
-}
+        .front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-/* animações */
-@keyframes rotateY {
-  0%   { transform: rotateY(0deg); }
-  40%  { transform: rotateY(180deg); }
-  60%  { transform: rotateY(180deg); }
-  100% { transform: rotateY(360deg); }
-}
+        /* Efeito de vidro/brilho sobre a logo */
+        .front::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+            z-index: 105;
+        }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+        .back {
+            transform: rotateY(180deg) translateZ(calc(var(--thickness) / 2));
+            flex-direction: column;
+            border: 2px solid rgba(255,255,255,0.1);
+            box-shadow: inset 0 0 80px rgba(0,0,0,0.9);
+            padding: 20px;
+            text-align: center;
+        }
 
-/* mobile refinado */
-@media (max-width: 480px) {
-  .circle {
-    width: 90vw;
-  }
+        .back h1 { 
+            font-size: clamp(20px, 5vw, 28px);
+            letter-spacing: 5px;
+            background: linear-gradient(to bottom, #fff, #64748b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-  .back p {
-    margin-top:6px;
-  }
-}
-</style></head>
+        .back p {
+            font-size: 11px;
+            opacity: 0.4;
+            margin-top: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
 
+        footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding-bottom: 20px;
+        }
+
+        .social-links { display: flex; gap: 20px; }
+
+        .social-icon {
+            font-size: 20px;
+            color: rgba(255,255,255,0.4);
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.3s;
+        }
+
+        .social-icon:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.08);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            font-size: 11px;
+            color: rgba(255,255,255,0.2);
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
 <body>
 
-<div class="scene">
-  <div class="circle">
+    <div class="ambient-glow"></div>
 
-    <div class="face front">
-      <img src="logo.jpeg" alt="logo">
+    <div class="container">
+        <div class="coin-wrapper" id="wrapper">
+            <div class="coin" id="coin">
+                <div class="face front">
+                    <img src="logo.jpeg" alt="Logo">
+                </div>
+                <div class="face back">
+                    <h1>COMING SOON</h1>
+                    <p>Mantenha o Foco</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="social-links">
+                <a href="https://www.instagram.com/elysian_softwares/" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.linkedin.com/company/elysian-softwares/" target="_blank" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <p class="copyright">Elysian Softwares 2026</p>
+        </footer>
     </div>
 
-    <div class="face back">
-      <h1>COMING SOON</h1>
-      <p>Algo está sendo construído</p>
-    </div>
+    <script>
+        const coin = document.getElementById('coin');
+        const wrapper = document.getElementById('wrapper');
+        
+        // Aumentando drasticamente o número de camadas para um efeito sólido "liso"
+        const numLayers = 120; 
+        const thickness = 30; // total em px
 
-  </div>
-</div>
+        for (let i = 0; i < numLayers; i++) {
+            const layer = document.createElement('div');
+            layer.className = 'coin-layer';
+            // Espaçamento ultra-fino de 0.25px entre cada disco
+            const zTranslate = (i * (thickness / numLayers)) - (thickness / 2);
+            layer.style.transform = `translateZ(${zTranslate}px)`;
+            
+            // Alterna levemente a cor para dar profundidade metálica
+            layer.style.background = i % 4 === 0 ? "#1e293b" : "#0f172a";
+            coin.appendChild(layer);
+        }
 
+        let autoRotation = 0;
+        let targetX = 0; let targetY = 0;
+        let currentX = 0; let currentY = 0;
+
+        const handleInteraction = (x, y, rect) => {
+            targetX = -((y - rect.top) / rect.height - 0.5) * 45;
+            targetY = ((x - rect.left) / rect.width - 0.5) * 45;
+        };
+
+        wrapper.addEventListener('mousemove', (e) => {
+            handleInteraction(e.clientX, e.clientY, wrapper.getBoundingClientRect());
+        });
+
+        wrapper.addEventListener('touchmove', (e) => {
+            handleInteraction(e.touches[0].clientX, e.touches[0].clientY, wrapper.getBoundingClientRect());
+        }, { passive: true });
+
+        const resetTilt = () => { targetX = 0; targetY = 0; };
+        wrapper.addEventListener('mouseleave', resetTilt);
+        wrapper.addEventListener('touchend', resetTilt);
+
+        function animate() {
+            autoRotation = (autoRotation + 0.4) % 360;
+            
+            // Interpolação (Lerp) para suavidade máxima
+            currentX += (targetX - currentX) * 0.05;
+            currentY += (targetY - currentY) * 0.05;
+
+            coin.style.transform = `rotateX(${currentX}deg) rotateY(${autoRotation + currentY}deg)`;
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
 </body>
 </html>
