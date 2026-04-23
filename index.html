@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elysian - Coming Soon</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: radial-gradient(circle at center, #0b1020, #05070f);
+      font-family: 'Inter', sans-serif;
+      color:white;
+      overflow:hidden;
+    }
+
+    .circle {
+      width:420px;
+      height:420px;
+      border-radius:50%;
+      position:relative;
+      display:flex;
+      overflow:hidden;
+      box-shadow: 0 0 80px rgba(59,130,246,0.25);
+    }
+
+    /* rotação */
+    .circle::before {
+      content:"";
+      position:absolute;
+      inset:-4px;
+      border-radius:50%;
+      background: conic-gradient(
+        #3b82f6,
+        #6366f1,
+        #3b82f6
+      );
+      animation: spin 6s linear infinite;
+      z-index:0;
+      filter: blur(8px);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .inner {
+      position:absolute;
+      inset:6px;
+      border-radius:50%;
+      display:flex;
+      z-index:1;
+      overflow:hidden;
+      background:#0b1020;
+    }
+
+    .half {
+      width:50%;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:30px;
+      text-align:center;
+    }
+
+    .left {
+      background: rgba(59,130,246,0.15);
+    }
+
+    .right {
+      background: rgba(0,0,0,0.4);
+    }
+
+    .logo {
+      max-width:160px;
+      opacity:0.95;
+    }
+
+    h1 {
+      font-size:28px;
+      letter-spacing:4px;
+      font-weight:600;
+    }
+
+    p {
+      margin-top:10px;
+      font-size:14px;
+      opacity:0.7;
+    }
+
+    /* linha divisória */
+    .divider {
+      position:absolute;
+      width:2px;
+      height:100%;
+      background: rgba(255,255,255,0.1);
+      left:50%;
+      transform:translateX(-50%);
+      z-index:2;
+    }
+
+    /* ticks ao redor */
+    .ticks {
+      position:absolute;
+      width:520px;
+      height:520px;
+      border-radius:50%;
+      border:1px dashed rgba(255,255,255,0.08);
+      animation: spinReverse 20s linear infinite;
+    }
+
+    @keyframes spinReverse {
+      to { transform: rotate(-360deg); }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="ticks"></div>
+
+  <div class="circle">
+    <div class="divider"></div>
+
+    <div class="inner">
+      <div class="half left">
+        <img src="logo.png" class="logo">
+      </div>
+
+      <div class="half right">
+        <div>
+          <h1>COMING SOON</h1>
+          <p>Algo está sendo construído</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
