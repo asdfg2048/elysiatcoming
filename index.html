@@ -19,7 +19,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
         .ambient {
@@ -34,9 +34,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            perspective: 1500px; /* Aumentado para profundidade mais estável */
+            perspective: 1200px;
             width: 100%;
-            padding: 20px;
         }
 
         .coin-box {
@@ -54,56 +53,56 @@
             will-change: transform;
         }
 
+        /* Camadas da Borda */
         .coin-layer {
             position: absolute;
             inset: 0;
             border-radius: 50%;
             background: #111827;
             pointer-events: none;
-            backface-visibility: visible; /* Garante que a borda não suma */
+            /* Força o hardware a tratar como 3D real */
+            transform: translate3d(0,0,0); 
         }
 
         .face {
             position: absolute;
             inset: 0;
             border-radius: 50%;
-            /* backface-visibility: hidden pode bugar no safari mobile, mudando para visible e controlando via Z */
-            backface-visibility: visible; 
             display: flex;
             align-items: center;
             justify-content: center;
             background: #05070f;
-            transform-style: preserve-3d;
+            backface-visibility: hidden; /* Importante para o giro */
+            -webkit-backface-visibility: hidden;
         }
 
         .front {
-            /* Aumentado o Z para 16px para ficar 1px acima das camadas de borda */
-            transform: translateZ(16px);
+            /* Z-index alto e push de 16px para frente */
+            transform: rotateY(0deg) translateZ(16px);
             border: 2px solid rgba(255,255,255,0.1);
             overflow: hidden;
-            z-index: 2;
+            z-index: 100;
         }
 
         .front img { 
-            width: 100.5%; /* Pequeno ajuste para cobrir bordas brancas */
-            height: 100.5%; 
-            object-fit: cover; 
-            display: block;
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover;
         }
 
         .back {
-            /* Invertido e empurrado para o outro lado */
+            /* Push de 16px para trás */
             transform: rotateY(180deg) translateZ(16px);
             border: 2px solid rgba(255,255,255,0.1);
             background: #02040a;
             flex-direction: column;
             text-align: center;
-            padding: 15px;
-            z-index: 1;
+            padding: 20px;
+            z-index: 99;
         }
 
         .back h1 { 
-            font-size: clamp(20px, 6vw, 28px);
+            font-size: clamp(20px, 6vw, 26px);
             letter-spacing: 4px;
             background: linear-gradient(to bottom, #fff, #64748b);
             -webkit-background-clip: text;
@@ -114,13 +113,13 @@
         .back p { font-size: 11px; opacity: 0.4; margin-top: 10px; text-transform: uppercase; letter-spacing: 2px; }
 
         footer {
-            padding-bottom: 40px;
+            padding: 40px 0;
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 15px;
-            z-index: 100;
+            z-index: 200;
         }
 
         .social-links { display: flex; gap: 20px; }
@@ -128,8 +127,8 @@
         .social-icon {
             font-size: 22px;
             color: rgba(255,255,255,0.5);
-            width: 52px;
-            height: 52px;
+            width: 50px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -137,13 +136,6 @@
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
             text-decoration: none !important;
-            transition: 0.3s;
-        }
-
-        .social-icon:hover, .social-icon:active {
-            color: #fff;
-            background: rgba(255,255,255,0.12);
-            transform: translateY(-3px);
         }
 
         .copyright {
@@ -165,9 +157,9 @@
                 </div>
                 <div class="face back">
                     <h1>COMING SOON</h1>
-                    <p>Bulding the ideal.</p>
+                    <p>Building the ideal.</p>
                 </div>
-            </div>
+                </div>
         </div>
     </div>
 
@@ -186,17 +178,15 @@
     <script>
         const coin = document.getElementById('coin');
         const wrapper = document.getElementById('wrapper');
-        
-        // 40 camadas para performance fluida no mobile
-        const totalLayers = 40;
+        const totalLayers = 30; // Reduzi para estabilizar no mobile
         const thickness = 30;
 
         for (let i = 0; i < totalLayers; i++) {
             const layer = document.createElement('div');
             layer.className = 'coin-layer';
             const zPos = (i * (thickness / totalLayers)) - (thickness / 2);
-            layer.style.transform = `translateZ(${zPos}px)`;
-            // Efeito visual de metal na borda
+            // Uso de translate3d para forçar aceleração de hardware
+            layer.style.transform = `translate3d(0, 0, ${zPos}px)`;
             layer.style.background = i % 2 === 0 ? "#111827" : "#0a0f1d";
             coin.appendChild(layer);
         }
@@ -223,7 +213,7 @@
             rot = (rot + 0.4) % 360;
             cX += (tX - cX) * 0.08;
             cY += (tY - cY) * 0.08;
-            // Aplicamos a rotação principal e a inclinação
+            // Combinação de rotação automática + inclinação do mouse/touch
             coin.style.transform = `rotateX(${cX}deg) rotateY(${rot + cY}deg)`;
             requestAnimationFrame(draw);
         }
