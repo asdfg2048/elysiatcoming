@@ -1,1 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ELYSIAN // ACID_ARCH</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@900&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --acid: #4658f6;
+    --ink: #0a0a0b;
+    --paper: #111113;
+    --grid: rgba(70, 88, 246, 0.07);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
+
+body {
+    background-color: var(--paper);
+    color: white;
+    font-family: 'Space Grotesk', sans-serif;
+    background-image: 
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 40px 40px;
+    overflow: hidden; /* Mantido para controlar o scroll pelo wrapper */
+}
+
+/* VIEWPORT DESKTOP */
+.viewport-wrapper {
+    display: flex;
+    height: 100vh;
+    padding: 40px;
+    gap: 40px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+section {
+    flex-shrink: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-left: 2px solid var(--acid);
+    padding-left: 40px;
+    position: relative;
+    min-width: 450px;
+}
+
+.giant-title {
+    font-family: 'Onest', sans-serif;
+    font-size: clamp(5rem, 18vw, 15rem); /* Ajustado o mínimo para não vazar no mobile */
+    line-height: 0.75;
+    letter-spacing: -0.07em;
+    color: var(--acid);
+    text-transform: uppercase;
+    mix-blend-mode: difference;
+    word-break: break-word; /* Garante que se o título for imenso, ele respeite a largura */
+}
+
+.outline-text {
+    -webkit-text-stroke: 1px var(--acid);
+    color: transparent;
+}
+
+.dossier-card {
+    background: var(--acid);
+    color: white;
+    padding: 30px;
+    width: 400px;
+    transform: rotate(-2deg);
+    margin-top: 40px;
+    box-shadow: 20px 20px 0px rgba(0,0,0,0.5);
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.dossier-card.white-card {
+    background: #fff;
+    color: var(--acid);
+}
+
+.dossier-card:hover {
+    transform: rotate(0deg) scale(1.05);
+    box-shadow: 0px 0px 40px var(--acid);
+}
+
+.dossier-card h3 {
+    font-family: 'Onest';
+    font-size: 2rem;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.label {
+    font-size: 12px;
+    text-transform: uppercase;
+    background: var(--acid);
+    color: white;
+    display: inline-block;
+    padding: 4px 10px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.coord {
+    position: fixed;
+    bottom: 40px;
+    left: 40px;
+    font-size: 12px;
+    color: var(--acid);
+    opacity: 0.5;
+    writing-mode: vertical-rl;
+    z-index: 10;
+}
+
+.scroll-hint{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    font-size:2rem;
+    color:var(--acid);
+    opacity:0.7;
+    animation:hintMove 1.5s infinite;
+    pointer-events:none;
+    z-index: 10;
+}
+
+@keyframes hintMove{
+    0%{ transform:translateX(0); opacity:0.3; }
+    50%{ transform:translateX(10px); opacity:1; }
+    100%{ transform:translateX(0); opacity:0.3; }
+}
+
+.arcade-section {
+    width: 800px;
+    background: rgba(70, 88, 246, 0.03);
+    border: 1px solid var(--acid);
+    padding: 60px;
+}
+
+.cta-btn {
+    font-family: 'Onest';
+    font-size: 3rem;
+    color: var(--acid);
+    text-decoration: none;
+    border: 5px solid var(--acid);
+    padding: 20px 40px;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+.cta-btn:hover {
+    background: var(--acid);
+    color: white;
+}
+
+.stack-viewport {
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.stack-track {
+    display: flex;
+    flex-direction: column;
+    animation: stackScroll 20s linear infinite;
+}
+
+@keyframes stackScroll {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-50%); }
+}
+
+/* --- MOBILE CORRECTIONS --- */
+@media (max-width: 768px) {
+    .viewport-wrapper {
+        padding: 0;
+        gap: 0;
+        scroll-snap-type: x mandatory;
+    }
+
+    section {
+        min-width: 100vw;
+        width: 100vw;
+        height: 100dvh; /* Usa a altura dinâmica para fugir dos botões do Android */
+        padding: 60px 20px 80px 20px; /* Padding bottom maior para não cobrir texto */
+        scroll-snap-align: start;
+        border-left: 2px solid var(--acid);
+    }
+
+    section:first-child { border-left: none; }
+
+    .giant-title {
+        font-size: 14vw;
+        white-space: normal;
+    }
+
+    .dossier-card {
+        width: 100% !important;
+        max-width: 320px;
+        margin-left: 0 !important;
+        transform: none !important;
+    }
+
+    .stack-viewport {
+        height: 65%; /* Aumentado para preencher mais o centro */
+        margin: auto 0;
+    }
+
+    .arcade-section { width: 100vw; }
+    .arcade-section h2 { font-size: 3.5rem !important; }
+    .cta-btn { font-size: 2rem; width: 100%; text-align: center; }
+    .coord { display: none; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="coord">ELYSIAN SOFTWARES 2026 // ITAPEVA, SÃO PAULO</div>
+<div class="scroll-hint">→</div>
+
+<div class="viewport-wrapper">
+
+    <section style="border-left: none;">
+        <div>
+            <span class="label">ESTABLISHED 2026</span>
+            <h1 class="giant-title">ELYSIAN<br><span class="outline-text">SOFTWARES</span></h1>
+        </div>
+        <div style="max-width: 500px; margin-top: 40px;">
+            <p style="font-size: clamp(1.2rem, 5vw, 2rem); font-weight: 300; line-height: 1.1;">
+                Desafiamos a estética da mesmice. Engenharia brutalista para quem busca o <span style="color: var(--acid)">Ideal Digital</span>.
+            </p>
+        </div>
+    </section>
+
+    <section>
+        <div class="label">ENGINEERING_CORE</div>
+    
+        <div class="stack-viewport">
+            <div class="stack-track">
+                <div class="stack-group">
+                    <div class="dossier-card">
+                        <h3>NODE.JS + PG</h3>
+                        <p>Estruturas robustas e backend resiliente.</p>
+                    </div>
+                    <div class="dossier-card white-card" style="transform: rotate(3deg); margin-left: 100px;">
+                        <h3>FLUTTER</h3>
+                        <p>Apps nativos com UI experimental.</p>
+                    </div>
+                    <div class="dossier-card" style="margin-left: 60px;">
+                        <h3>REACT + NEXT</h3>
+                        <p>Web apps performáticos com SSR + edge.</p>
+                    </div>
+                    <div class="dossier-card white-card" style="transform: rotate(-3deg); margin-left: 160px;">
+                        <h3>SCALABLE SYSTEMS</h3>
+                        <p>Microsserviços, filas, alta disponibilidade.</p>
+                    </div>
+                    <div class="dossier-card" style="margin-left: 40px;">
+                        <h3>REALTIME</h3>
+                        <p>WebSockets, eventos e streaming.</p>
+                    </div>
+                    <div class="dossier-card white-card" style="transform: rotate(2deg); margin-left: 120px;">
+                        <h3>APIs</h3>
+                        <p>REST + GraphQL.</p>
+                    </div>
+                    <div class="dossier-card" style="margin-left: 80px;">
+                        <h3>PYTHON AI</h3>
+                        <p>Modelos, automação e dados.</p>
+                    </div>
+                </div>
+                <div class="stack-group">
+                    <div class="dossier-card">
+                        <h3>NODE.JS + PG</h3>
+                        <p>Estruturas robustas e backend resiliente.</p>
+                    </div>
+                    <div class="dossier-card white-card" style="transform: rotate(3deg); margin-left: 100px;">
+                        <h3>FLUTTER</h3>
+                        <p>Apps nativos com UI experimental.</p>
+                    </div>
+                    <div class="dossier-card" style="margin-left: 60px;">
+                        <h3>REACT + NEXT</h3>
+                        <p>Web apps performáticos com SSR + edge.</p>
+                    </div>
+                    <div class="dossier-card white-card" style="transform: rotate(-3deg); margin-left: 160px;">
+                        <h3>SCALABLE SYSTEMS</h3>
+                        <p>Microsserviços, filas, alta disponibilidade.</p>
+                    </div>
+                    <div class="dossier-card" style="margin-left: 40px;">
+                        <h3>REALTIME</h3>
+                        <p>WebSockets, eventos e streaming.</p>
+                    </div>
+                    <div class="dossier-card white-card" style="transform: rotate(2deg); margin-left: 120px;">
+                        <h3>APIs</h3>
+                        <p>REST + GraphQL.</p>
+                    </div>
+                    <div class="dossier-card" style="margin-left: 80px;">
+                        <h3>PYTHON AI</h3>
+                        <p>Modelos, automação e dados.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="arcade-section">
+        <div class="label">INTERNAL_PROJECT_01</div>
+        <h2 style="font-size: clamp(3rem, 10vw, 5rem); font-family: 'Onest'; margin-bottom: 20px;">ARCADE<br>LUNAR</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 40px; opacity: 0.8;">
+            Rede social gamer construída in-house.
+        </p>
+        <div style="width: 100%; height: 300px; background: var(--acid); display: flex; align-items: center; justify-content: center; color: var(--ink); font-weight: 900;">
+            [ PREVIEW_COMPONENT_LOADING ]
+        </div>
+    </section>
+
+    <section style="justify-content: center;">
+        <div style="text-align: right; width: 100%;">
+            <span class="label">READY FOR DEPLOYMENT?</span>
+            <br><br>
+            <a href="mailto:contato@elysiansoftwares.com.br" class="cta-btn">LET'S BUILD →</a>
+        </div>
+    </section>
+
+</div>
+
+<script>
+const slider = document.querySelector('.viewport-wrapper');
+
+/* Wheel scroll horizontal (Desktop Only) */
+window.addEventListener('wheel', (e) => {
+    if(window.innerWidth > 768){
+        e.preventDefault();
+        slider.scrollLeft += e.deltaY;
+    }
+}, { passive: false });
+
+/* Drag scroll logic (Desktop Only) */
+let isDown = false;
+let startX;
+let scrollLeft;
+
+slider.addEventListener('mousedown', (e) => {
+    if(window.innerWidth <= 768) return;
+    isDown = true;
+    startX = e.pageX - slider.offsetLeft;
+    scrollLeft = slider.scrollLeft;
+});
+
+slider.addEventListener('mouseup', () => isDown = false);
+slider.addEventListener('mouseleave', () => isDown = false);
+
+slider.addEventListener('mousemove', (e) => {
+    if (!isDown || window.innerWidth <= 768) return;
+    e.preventDefault();
+    const x = e.pageX - slider.offsetLeft;
+    const walk = (x - startX) * 2;
+    slider.scrollLeft = scrollLeft - walk;
+});
+
+/* Touch support for Desktop Hybrid, but mobile uses native Snap */
+let touchStart = 0;
+let touchScroll = 0;
+
+slider.addEventListener('touchstart', (e) => {
+    if(window.innerWidth > 768) {
+        touchStart = e.touches[0].pageX;
+        touchScroll = slider.scrollLeft;
+    }
+}, {passive: true});
+
+slider.addEventListener('touchmove', (e) => {
+    if(window.innerWidth > 768) {
+        const x = e.touches[0].pageX;
+        slider.scrollLeft = touchScroll - (x - touchStart);
+    }
+}, {passive: true});
+</script>
+
+</body>
+</html>
