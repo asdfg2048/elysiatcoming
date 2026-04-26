@@ -16,7 +16,16 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
+/* Esconde a barra de rolagem para Chrome, Safari e Opera */
+.viewport-wrapper::-webkit-scrollbar {
+    display: none;
+}
 
+/* Esconde para IE, Edge e Firefox */
+.viewport-wrapper {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
 body {
     background-color: var(--paper);
     color: white;
