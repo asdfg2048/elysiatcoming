@@ -6,7 +6,6 @@
 <title>ELYSIAN SOFTWARE & DESIGN STUDIO</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@900&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
-
 <style>
 :root {
     --acid: #4658f6;
@@ -15,65 +14,85 @@
     --grid: rgba(70, 88, 246, 0.07);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
-/* Esconde a barra de rolagem para Chrome, Safari e Opera */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    cursor: crosshair;
+}
+
+/* esconder scrollbar */
 .viewport-wrapper::-webkit-scrollbar {
     display: none;
 }
 
-.viewport-wrapper {
-  overflow-x: auto;
-  scroll-behavior: auto;
-  cursor: grab;
-}
-
-.viewport-wrapper:active {
-  cursor: grabbing;
-}
+/* BODY */
 body {
     background-color: var(--paper);
     color: white;
     font-family: 'Space Grotesk', sans-serif;
+
     background-image: 
         linear-gradient(var(--grid) 1px, transparent 1px),
         linear-gradient(90deg, var(--grid) 1px, transparent 1px);
     background-size: 40px 40px;
-    overflow: hidden; /* Mantido para controlar o scroll pelo wrapper */
+
+    overflow: hidden;
 }
 
-/* VIEWPORT DESKTOP */
+/* =========================
+   VIEWPORT (FIX PRINCIPAL)
+========================= */
 .viewport-wrapper {
     display: flex;
     height: 100vh;
     padding: 40px;
     gap: 40px;
+
     overflow-x: auto;
     overflow-y: hidden;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
+
+    /* CRÍTICO */
+    scroll-behavior: auto; /* REMOVE smooth */
+    will-change: scroll-position;
+    contain: layout paint size;
+
+    cursor: grab;
 }
 
+.viewport-wrapper:active {
+    cursor: grabbing;
+}
+
+/* =========================
+   SECTIONS
+========================= */
 section {
-    flex-shrink: 0;
+    flex: 0 0 auto; /* FIX: evita reflow */
+    min-width: 450px;
+
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+
     border-left: 2px solid var(--acid);
     padding-left: 40px;
     position: relative;
-    min-width: 450px;
 }
 
+/* =========================
+   TYPO
+========================= */
 .giant-title {
     font-family: 'Onest', sans-serif;
-    font-size: clamp(5rem, 18vw, 15rem); /* Ajustado o mínimo para não vazar no mobile */
+    font-size: clamp(5rem, 18vw, 15rem);
     line-height: 0.75;
     letter-spacing: -0.07em;
     color: var(--acid);
     text-transform: uppercase;
     mix-blend-mode: difference;
-    word-break: break-word; /* Garante que se o título for imenso, ele respeite a largura */
+    word-break: break-word;
 }
 
 .outline-text {
@@ -81,15 +100,22 @@ section {
     color: transparent;
 }
 
+/* =========================
+   CARDS
+========================= */
 .dossier-card {
     background: var(--acid);
     color: white;
     padding: 30px;
     width: 400px;
+
     transform: rotate(-2deg);
     margin-top: 40px;
+
     box-shadow: 20px 20px 0px rgba(0,0,0,0.5);
-    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    will-change: transform;
 }
 
 .dossier-card.white-card {
@@ -109,6 +135,9 @@ section {
     margin-bottom: 10px;
 }
 
+/* =========================
+   UI
+========================= */
 .label {
     font-size: 12px;
     text-transform: uppercase;
@@ -131,24 +160,27 @@ section {
     z-index: 10;
 }
 
-.scroll-hint{
-    position:fixed;
-    bottom:20px;
-    right:20px;
-    font-size:2rem;
-    color:var(--acid);
-    opacity:0.7;
-    animation:hintMove 1.5s infinite;
-    pointer-events:none;
+.scroll-hint {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 2rem;
+    color: var(--acid;
+    opacity: 0.7;
+    animation: hintMove 1.5s infinite;
+    pointer-events: none;
     z-index: 10;
 }
 
-@keyframes hintMove{
-    0%{ transform:translateX(0); opacity:0.3; }
-    50%{ transform:translateX(10px); opacity:1; }
-    100%{ transform:translateX(0); opacity:0.3; }
+@keyframes hintMove {
+    0% { transform: translateX(0); opacity: 0.3; }
+    50% { transform: translateX(10px); opacity: 1; }
+    100% { transform: translateX(0); opacity: 0.3; }
 }
 
+/* =========================
+   EXTRA SECTIONS
+========================= */
 .arcade-section {
     width: 800px;
     background: rgba(70, 88, 246, 0.03);
@@ -172,6 +204,9 @@ section {
     color: white;
 }
 
+/* =========================
+   STACK
+========================= */
 .stack-viewport {
     height: 100%;
     overflow: hidden;
@@ -182,6 +217,7 @@ section {
     display: flex;
     flex-direction: column;
     animation: stackScroll 20s linear infinite;
+    will-change: transform;
 }
 
 @keyframes stackScroll {
@@ -189,7 +225,9 @@ section {
     100% { transform: translateY(-50%); }
 }
 
-/* --- MOBILE CORRECTIONS --- */
+/* =========================
+   MOBILE
+========================= */
 @media (max-width: 768px) {
     .viewport-wrapper {
         padding: 0;
@@ -200,13 +238,17 @@ section {
     section {
         min-width: 100vw;
         width: 100vw;
-        height: 100dvh; /* Usa a altura dinâmica para fugir dos botões do Android */
-        padding: 60px 20px 80px 20px; /* Padding bottom maior para não cobrir texto */
+        height: 100dvh;
+
+        padding: 60px 20px 80px 20px;
+
         scroll-snap-align: start;
         border-left: 2px solid var(--acid);
     }
 
-    section:first-child { border-left: none; }
+    section:first-child {
+        border-left: none;
+    }
 
     .giant-title {
         font-size: 14vw;
@@ -221,14 +263,27 @@ section {
     }
 
     .stack-viewport {
-        height: 65%; /* Aumentado para preencher mais o centro */
+        height: 65%;
         margin: auto 0;
     }
 
-    .arcade-section { width: 100vw; }
-    .arcade-section h2 { font-size: 3.5rem !important; }
-    .cta-btn { font-size: 2rem; width: 100%; text-align: center; }
-    .coord { display: none; }
+    .arcade-section {
+        width: 100vw;
+    }
+
+    .arcade-section h2 {
+        font-size: 3.5rem !important;
+    }
+
+    .cta-btn {
+        font-size: 2rem;
+        width: 100%;
+        text-align: center;
+    }
+
+    .coord {
+        display: none;
+    }
 }
 </style>
 </head>
