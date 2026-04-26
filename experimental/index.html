@@ -306,7 +306,9 @@ const slider = document.querySelector('.viewport-wrapper');
 slider.addEventListener('wheel', (e) => {
     if (window.innerWidth <= 768) return;
 
-    // só converte se for scroll vertical dominante
+    // ignora micro movimentos (trackpad noise)
+    if (Math.abs(e.deltaY) < 10) return;
+
     if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
         e.preventDefault();
         slider.scrollLeft += e.deltaY;
