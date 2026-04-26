@@ -295,13 +295,79 @@
      </section>
      <section class="arcade-section">
          <div class="label">INTERNAL_PROJECT_01</div>
-         <h2 style="font-size: clamp(3rem, 10vw, 5rem); font-family: 'Onest'; margin-bottom: 20px;">ARCADE<br>LUNAR</h2>
+         <h2 style="font-size: clamp(3rem, 10vw, 5rem); font-family: 'Onest'; margin-bottom: 20px;">>Workzen</h2>
          <p style="font-size: 1.2rem; margin-bottom: 40px; opacity: 0.8;">
-             Rede social gamer construída in-house.
-         </p>
-         <div style="width: 100%; height: 300px; background: var(--acid); display: flex; align-items: center; justify-content: center; color: var(--ink); font-weight: 900;">
-             [ PREVIEW_COMPONENT_LOADING ]
-         </div>
+            Workzen é um case study de uma plataforma end-to-end de recrutamento. O foco foi projetar e implementar um fluxo completo de conexão entre candidatos e vagas, validando arquitetura, UX e regras de negócio.       
+            <div style="
+  width: 100%;
+  height: 380px;
+  position: relative;
+
+  border: 1px solid var(--acid);
+  background: #000;
+
+  box-shadow: 10px 10px 0px rgba(0,0,0,0.7);
+
+  overflow: hidden;
+">
+
+  <!-- imagem -->
+  <img 
+    src="workkzen.png" 
+    alt="preview"
+    style="
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+
+      transition: transform 0.4s ease, filter 0.3s ease;
+      filter: brightness(0.85);
+    "
+    onmouseover="this.style.transform='scale(1.06)'; this.style.filter='brightness(1)'"
+    onmouseout="this.style.transform='scale(1)'; this.style.filter='brightness(0.85)'"
+  />
+
+  <!-- overlay -->
+  <div style="
+    position:absolute;
+    inset:0;
+    background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+  "></div>
+
+  <!-- botão -->
+  <a 
+    href="https://tcc-react-eight.vercel.app/" 
+    target="_blank"
+    style="
+      position: absolute;
+      top: 14px;
+      right: 14px;
+
+      background: var(--acid);
+      color: white;
+
+      padding: 10px 14px;
+      font-size: 0.7rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      border: 1px solid var(--ink);
+      box-shadow: 3px 3px 0 var(--ink);
+
+      transition: all 0.15s ease;
+    "
+    onmouseover="this.style.transform='translate(3px,3px)'; this.style.boxShadow='0 0 0 var(--ink)'"
+    onmouseout="this.style.transform='translate(0,0)'; this.style.boxShadow='3px 3px 0 var(--ink)'"
+  >
+    ▶ PLAY DEMO
+  </a>
+
+</div>
      </section>
      <section style="justify-content: center;">
          <div style="text-align: right; width: 100%;">
