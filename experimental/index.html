@@ -21,10 +21,14 @@
     display: none;
 }
 
-/* Esconde para IE, Edge e Firefox */
 .viewport-wrapper {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+  overflow-x: auto;
+  scroll-behavior: auto;
+  cursor: grab;
+}
+
+.viewport-wrapper:active {
+  cursor: grabbing;
 }
 body {
     background-color: var(--paper);
