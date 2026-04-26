@@ -24,6 +24,10 @@
      overflow: hidden; /* Mantido para controlar o scroll pelo wrapper */
  }
  /* VIEWPORT DESKTOP */
+.viewport-wrapper.dragging,
+.viewport-wrapper.dragging * {
+    user-select: none;
+}
 .viewport-wrapper {
     display: flex;
     height: 100vh;
