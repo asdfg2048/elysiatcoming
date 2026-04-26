@@ -345,7 +345,10 @@ const slider = document.querySelector('.viewport-wrapper');
 window.addEventListener('wheel', (e) => {
     if(window.innerWidth > 768){
         e.preventDefault();
-        slider.scrollLeft += e.deltaY;
+        slider.scrollBy({
+            left: e.deltaY * 1.5, // Multiplicador de velocidade
+            behavior: 'smooth'    // Isso torna o deslize fluido
+        });
     }
 }, { passive: false });
 
@@ -368,7 +371,7 @@ slider.addEventListener('mousemove', (e) => {
     if (!isDown || window.innerWidth <= 768) return;
     e.preventDefault();
     const x = e.pageX - slider.offsetLeft;
-    const walk = (x - startX) * 2;
+    const walk = (x - startX) * 3; // Aumentado para 3 para maior fluidez
     slider.scrollLeft = scrollLeft - walk;
 });
 
