@@ -1,1 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELYSIAN — Sensory Physics Void</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #3b82f6;
+            --dark: #05070a;
+        }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: var(--dark);
+            color: #e0f2fe;
+            font-family: 'Space Grotesk', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        #world-container {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            background-image: radial-gradient(circle at 1px 1px, rgba(59, 130, 246, 0.05) 1px, transparent 0);
+            background-size: 60px 60px;
+        }
+
+        .memory-node {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 22px;
+            border-radius: 20px;
+            width: 250px;
+            font-size: 0.95rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            pointer-events: none;
+            will-change: transform;
+            color: #f0f9ff;
+            transition: border-color 0.3s;
+        }
+
+        .memory-node .time {
+            display: block;
+            font-size: 0.65rem;
+            color: var(--accent);
+            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .query-wrapper {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 480px;
+            z-index: 1000;
+        }
+
+        .query-container {
+            background: rgba(8, 12, 20, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            border-radius: 100px;
+            display: flex;
+            padding: 10px 10px 10px 25px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            outline: none;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bubble-anim {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            background: var(--accent);
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            animation: floatUp 0.8s ease-out forwards;
+            z-index: 999;
+            filter: blur(4px);
+        }
+
+        @keyframes floatUp {
+            0% { transform: scale(0.5) translate(-50%, 0); opacity: 1; }
+            100% { transform: scale(4) translate(-50%, -400px); opacity: 0; }
+        }
+
+        .header { position: fixed; top: 30px; left: 30px; z-index: 1000; pointer-events: none; }
+        .header h1 { font-size: 1.1rem; letter-spacing: 8px; font-weight: 700; opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>ELYSIAN</h1>
+    <p id="counter" style="font-size: 0.7rem; color: #44546a;">Sincronizando frequências...</p>
+</div>
+
+<div id="world-container"></div>
+
+<div class="query-wrapper">
+    <div class="query-container">
+        <input type="text" id="input" placeholder="Liberte uma memória no vazio..." autocomplete="off">
+        <button onclick="injectMemory()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+        </button>
+    </div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://jhubexsdpwuwjsgenbqu.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_49jsywQ5sasTjvBfmQYTCw_xqfJ3ZqJ";
+const TABLE = "memories";
+
+// --- AUDIO ENGINE (VIBES & METAL) ---
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let bgNodes = [];
+
+function initAudio() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    if (bgNodes.length > 0) return;
+
+    const masterGain = audioCtx.createGain();
+    masterGain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+    masterGain.connect(audioCtx.destination);
+
+    const createLayer = (freq, panValue) => {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        const p = audioCtx.createPanner();
+        const lfo = audioCtx.createOscillator();
+        const lfoG = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        lfo.frequency.setValueAtTime(0.05 + Math.random() * 0.05, audioCtx.currentTime);
+        lfoG.gain.setValueAtTime(0.02, audioCtx.currentTime);
+        
+        lfo.connect(lfoG.gain);
+        lfoG.connect(g.gain);
+        osc.connect(g);
+        g.connect(p);
+        p.connect(masterGain);
+        p.setPosition(panValue, 0, 1);
+        
+        osc.start();
+        lfo.start();
+        return osc;
+    };
+
+    // Frequências Solfeggio / Theta
+    bgNodes.push(createLayer(174, -1)); // Alívio de tensão
+    bgNodes.push(createLayer(174.5, 1)); // Binaural beat
+    bgNodes.push(createLayer(396, 0)); // Libertação
+}
+
+function playMetallicSFX(freq, decay = 2, vol = 0.05) {
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    const delay = audioCtx.createDelay();
+    const fb = audioCtx.createGain();
+
+    // Som metálico/vidro: Onda quadrada ou dente de serra filtrada
+    osc.type = 'triangle'; 
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(freq * 0.5, audioCtx.currentTime + decay);
+    
+    g.gain.setValueAtTime(vol, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + decay);
+
+    // Eco metálico
+    delay.delayTime.setValueAtTime(0.1, audioCtx.currentTime);
+    fb.gain.setValueAtTime(0.3, audioCtx.currentTime);
+
+    osc.connect(g);
+    g.connect(audioCtx.destination);
+    g.connect(delay);
+    delay.connect(fb);
+    fb.connect(delay);
+    delay.connect(audioCtx.destination);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + decay);
+}
+
+// --- PHYSICS ENGINE ---
+const { Engine, Runner, World, Bodies, Mouse, MouseConstraint, Events } = Matter;
+const engine = Engine.create();
+engine.world.gravity.y = 0;
+
+const container = document.getElementById('world-container');
+const width = window.innerWidth;
+const height = window.innerHeight;
+
+const runner = Runner.create();
+Runner.run(runner, engine);
+
+const walls = [
+    Bodies.rectangle(width/2, -50, width, 100, { isStatic: true }),
+    Bodies.rectangle(width/2, height+50, width, 100, { isStatic: true }),
+    Bodies.rectangle(-50, height/2, 100, height, { isStatic: true }),
+    Bodies.rectangle(width+50, height/2, 100, height, { isStatic: true })
+];
+World.add(engine.world, walls);
+
+const mouseConstraint = MouseConstraint.create(engine, {
+    mouse: Mouse.create(container),
+    constraint: { stiffness: 0.1, render: { visible: false } }
+});
+World.add(engine.world, mouseConstraint);
+
+const memoryMap = new Map();
+
+function createMemoryPhysics(m, x, y) {
+    const el = document.createElement('div');
+    el.className = 'memory-node';
+    el.innerHTML = `<span class="time">${new Date().toLocaleTimeString('pt-BR')}</span>${m.text}`;
+    container.appendChild(el);
+
+    const body = Bodies.rectangle(x, y, 250, 110, {
+        frictionAir: 0.07,
+        restitution: 0.6,
+        inertia: Infinity, // Trava a rotação
+        chamfer: { radius: 20 }
+    });
+
+    World.add(engine.world, body);
+    memoryMap.set(body, el);
+    playMetallicSFX(800, 1.5, 0.03); // Som de "cristal" ao nascer
+}
+
+// Evento de colisão com som metálico
+Events.on(engine, 'collisionStart', (event) => {
+    event.pairs.forEach(() => {
+        // Notas aleatórias de uma escala metálica
+        const glassNotes = [1200, 1600, 2200, 900];
+        const freq = glassNotes[Math.floor(Math.random() * glassNotes.length)];
+        playMetallicSFX(freq, 0.5, 0.015);
+    });
+});
+
+(function renderLoop() {
+    memoryMap.forEach((el, body) => {
+        const { x, y } = body.position;
+        el.style.transform = `translate(${x - 125}px, ${y - 55}px)`;
+    });
+    requestAnimationFrame(renderLoop);
+})();
+
+// --- LOGIC ---
+async function loadInitial() {
+    try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?order=created_at.desc&limit=30`, {
+            headers: { "apikey": SUPABASE_ANON_KEY, "Authorization": `Bearer ${SUPABASE_ANON_KEY}` }
+        });
+        const data = await res.json();
+        document.getElementById('counter').textContent = `${data.length} FRAGMENTOS EM RESSONÂNCIA`;
+        data.forEach((m, i) => {
+            setTimeout(() => createMemoryPhysics(m, Math.random() * width, Math.random() * height), i * 150);
+        });
+    } catch(e) { console.error(e); }
+}
+
+async function injectMemory() {
+    initAudio();
+    const input = document.getElementById('input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    playMetallicSFX(300, 2, 0.1); // Som de envio baixo e profundo
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble-anim';
+    document.body.appendChild(bubble);
+    setTimeout(() => bubble.remove(), 800);
+
+    try {
+        fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`, {
+            method: 'POST',
+            headers: { "apikey": SUPABASE_ANON_KEY, "Authorization": `Bearer ${SUPABASE_ANON_KEY}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ text: text })
+        });
+        setTimeout(() => {
+            createMemoryPhysics({ text }, width/2, height/2);
+            input.value = '';
+        }, 600);
+    } catch(e) { console.error(e); }
+}
+
+document.getElementById('input').addEventListener('keypress', (e) => { if (e.key === 'Enter') injectMemory(); });
+window.addEventListener('mousedown', initAudio);
+loadInitial();
+</script>
+
+</body>
+</html>
