@@ -344,80 +344,59 @@ section {
 <script>
 const slider = document.querySelector('.viewport-wrapper');
 
-if (slider) {
+if (!slider) return;
 
-    /* =========================
-       WHEEL → horizontal scroll
-    ========================= */
-    slider.addEventListener('wheel', (e) => {
-        if (window.innerWidth <= 768) return;
+/* =========================
+   DRAG (pointer events)
+========================= */
+let isDown = false;
+let startX = 0;
+let scrollStart = 0;
 
+slider.addEventListener('pointerdown', (e) => {
+    if (window.innerWidth <= 768) return;
+
+    isDown = true;
+    startX = e.clientX;
+    scrollStart = slider.scrollLeft;
+
+    slider.setPointerCapture(e.pointerId);
+});
+
+slider.addEventListener('pointermove', (e) => {
+    if (!isDown) return;
+
+    const dx = e.clientX - startX;
+    slider.scrollLeft = scrollStart - dx;
+});
+
+slider.addEventListener('pointerup', () => {
+    isDown = false;
+});
+
+slider.addEventListener('pointerleave', () => {
+    isDown = false;
+});
+
+
+/* =========================
+   CLICK FIX (evita click acidental ao arrastar)
+========================= */
+let moved = false;
+
+slider.addEventListener('pointerdown', () => moved = false);
+
+slider.addEventListener('pointermove', () => {
+    if (isDown) moved = true;
+});
+
+slider.addEventListener('click', (e) => {
+    if (moved) {
         e.preventDefault();
-        slider.scrollLeft += e.deltaY * 1.2;
-    }, { passive: false });
-
-
-    /* =========================
-       POINTER DRAG (mouse + touch)
-    ========================= */
-    let isDown = false;
-    let startX = 0;
-    let scrollStart = 0;
-    let velocity = 0;
-    let raf;
-
-    slider.addEventListener('pointerdown', (e) => {
-        if (window.innerWidth <= 768) return;
-
-        isDown = true;
-        slider.setPointerCapture(e.pointerId);
-
-        startX = e.clientX;
-        scrollStart = slider.scrollLeft;
-        velocity = 0;
-
-        cancelAnimationFrame(raf);
-    });
-
-    slider.addEventListener('pointermove', (e) => {
-        if (!isDown) return;
-
-        const dx = e.clientX - startX;
-        velocity = dx;
-
-        slider.scrollLeft = scrollStart - dx;
-    });
-
-    slider.addEventListener('pointerup', () => {
-        isDown = false;
-        applyMomentum();
-    });
-
-    slider.addEventListener('pointerleave', () => {
-        if (!isDown) return;
-        isDown = false;
-        applyMomentum();
-    });
-
-
-    /* =========================
-       MOMENTUM (inércia)
-    ========================= */
-    function applyMomentum() {
-        cancelAnimationFrame(raf);
-
-        const step = () => {
-            velocity *= 0.95;
-            slider.scrollLeft -= velocity;
-
-            if (Math.abs(velocity) > 0.5) {
-                raf = requestAnimationFrame(step);
-            }
-        };
-
-        raf = requestAnimationFrame(step);
+        e.stopPropagation();
     }
-}
+}, true);
+
 </script>
 
 </body>
