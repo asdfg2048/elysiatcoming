@@ -24,16 +24,25 @@
      overflow: hidden; /* Mantido para controlar o scroll pelo wrapper */
  }
  /* VIEWPORT DESKTOP */
- .viewport-wrapper {
-     display: flex;
-     height: 100vh;
-     padding: 40px;
-     gap: 40px;
-     overflow-x: auto;
-     overflow-y: hidden;
-     scroll-behavior: smooth;
-     -webkit-overflow-scrolling: touch;
- }
+.viewport-wrapper {
+    display: flex;
+    height: 100vh;
+
+    padding: 40px;
+    gap: 40px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scroll-behavior: smooth;
+
+    -webkit-overflow-scrolling: touch;
+
+    /* FIX CHROME */
+    overscroll-behavior-x: contain;
+    will-change: scroll-position;
+    transform: translateZ(0);
+}
  section {
      flex-shrink: 0;
      height: 100%;
