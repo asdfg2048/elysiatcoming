@@ -63,20 +63,23 @@
      position: relative;
      min-width: 450px;
  }
- .giant-title {
-     font-family: 'Onest', sans-serif;
-     font-size: clamp(5rem, 18vw, 15rem); /* Ajustado o mínimo para não vazar no mobile */
-     line-height: 0.75;
-     letter-spacing: -0.07em;
-     color: var(--acid);
-     text-transform: uppercase;
-     mix-blend-mode: difference;
-     word-break: break-word; /* Garante que se o título for imenso, ele respeite a largura */
- }
- .outline-text {
-     -webkit-text-stroke: 1px var(--acid);
-     color: transparent;
- }
+.giant-title {
+    font-family: 'Onest', sans-serif;
+    font-size: clamp(5rem, 18vw, 15rem);
+    line-height: 0.75;
+    letter-spacing: -0.07em;
+    text-transform: uppercase;
+
+    color: var(--acid);
+    word-break: break-word;
+
+    mix-blend-mode: difference;
+}
+.outline-text {
+    color: transparent;
+    -webkit-text-stroke: 1px var(--acid);
+    mix-blend-mode: normal; /* ESSENCIAL no Chrome */
+}
  .dossier-card {
      background: var(--acid);
      color: white;
