@@ -318,6 +318,10 @@ slider.addEventListener('wheel', (e) => {
         e.preventDefault();
         slider.scrollLeft += e.deltaY;
     }
+    document.body.style.userSelect = 'none';
+
+    startX = e.pageX - slider.offsetLeft;
+    scrollLeft = slider.scrollLeft;
 }, { passive: false });
 
 /* ===== DRAG SCROLL ===== */
@@ -339,6 +343,7 @@ slider.addEventListener('mousedown', (e) => {
 window.addEventListener('mouseup', () => {
     isDown = false;
     slider.classList.remove('dragging');
+    document.body.style.userSelect = '';
 });
 
 slider.addEventListener('mouseleave', () => {
