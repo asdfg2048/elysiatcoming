@@ -23,7 +23,7 @@
     <meta property="twitter:image" content="logo.jpeg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+    <link rel="preload" href="/experimental/" as="document">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
@@ -38,8 +38,11 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-        }
-
+        }    
+        body.fade-out {
+    opacity: 0;
+    transition: opacity 0.7s ease;
+}
         .ambient {
             position: fixed;
             inset: 0;
@@ -206,32 +209,65 @@
         <p class="copyright">Elysian Softwares 2026 · Independent software & design studio based in Brazil</p>
     </footer>
 
-    <script>
-        const coin = document.getElementById('coin');
-        const container = document.getElementById('container');
-        
-        let autoRot = 0;
-        let tX = 0, tY = 0, cX = 0, cY = 0;
+<script>
+    const coin = document.getElementById('coin');
+    const container = document.getElementById('container');
+    
+    let autoRot = 0;
+    let tX = 0, tY = 0, cX = 0, cY = 0;
 
-        const update = (x, y) => {
-            const rect = container.getBoundingClientRect();
-            tX = -((y - rect.top) / rect.height - 0.5) * 35;
-            tY = ((x - rect.left) / rect.width - 0.5) * 35;
-        };
+    const update = (x, y) => {
+        const rect = container.getBoundingClientRect();
+        tX = -((y - rect.top) / rect.height - 0.5) * 35;
+        tY = ((x - rect.left) / rect.width - 0.5) * 35;
+    };
 
-        window.addEventListener('mousemove', (e) => update(e.clientX, e.clientY));
-        window.addEventListener('touchmove', (e) => {
-            update(e.touches[0].clientX, e.touches[0].clientY);
-        }, {passive: true});
+    window.addEventListener('mousemove', (e) => update(e.clientX, e.clientY));
+    window.addEventListener('touchmove', (e) => {
+        update(e.touches[0].clientX, e.touches[0].clientY);
+    }, {passive: true});
 
-        function animate() {
-            autoRot = (autoRot + 0.6) % 360;
-            cX += (tX - cX) * 0.1;
-            cY += (tY - cY) * 0.1;
-            coin.style.transform = `rotateX(${cX}deg) rotateY(${autoRot + cY}deg)`;
-            requestAnimationFrame(animate);
-        }
-        animate();
-    </script>
+    function animate() {
+        autoRot = (autoRot + 0.6) % 360;
+        cX += (tX - cX) * 0.1;
+        cY += (tY - cY) * 0.1;
+        coin.style.transform = `rotateX(${cX}deg) rotateY(${autoRot + cY}deg)`;
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    /* =========================
+       ADIÇÕES (splash system)
+    ========================= */
+
+    const SPLASH_TIME = 2200;
+
+    // pula splash se já viu
+    if (sessionStorage.getItem("seenSplash")) {
+        window.location.href = "/experimental/";
+    }
+
+    // preload real da próxima página
+    const preloadPage = () => {
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = '/experimental/';
+        document.body.appendChild(iframe);
+    };
+
+    window.addEventListener('load', () => {
+        preloadPage();
+
+        setTimeout(() => {
+            sessionStorage.setItem("seenSplash", "1");
+
+            document.body.classList.add('fade-out');
+
+            setTimeout(() => {
+                window.location.href = "/experimental/";
+            }, 700);
+        }, SPLASH_TIME);
+    });
+</script>
 </body>
 </html>
